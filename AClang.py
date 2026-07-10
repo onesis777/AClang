@@ -2,7 +2,7 @@ from lark import Lark, Transformer
 
 # AClang.lark から文法を読み込む
 with open("AClang.lark", "r", encoding="utf-8") as f:
-    grammar = f.read
+    grammar = f.read()
 
 # 変換器
 class AClangTransformer(Transformer):
@@ -21,4 +21,4 @@ class AClangTransformer(Transformer):
         return items[0]
 
 # パーサーを作成
-perser = Lark(grammar, perser="lalr", transformer=AClangTransformer())
+perser = Lark(grammar, parser="lalr", transformer=AClangTransformer())
