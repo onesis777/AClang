@@ -1,0 +1,19 @@
+//文法のトップ、全ての入力文字列はここを起点に解析される
+?start : cmd+
+
+// 命令の種類
+?cmd : out_cmd
+
+// out命令のルール
+// "out"のあとに文が続く
+out_cmd : "out" expression
+
+// 式 (expression) は文字列か数字
+?expression : STRING -> string
+            | NUMBER -> number
+
+// Larkの組み込み正規表現をインポート
+%import common.ESCAPED_STRING -> STRING
+%import common.SIGNED_NUMBER  -> NUMBER
+%import common.WS
+%ignore WS // 空白文字は無視する
