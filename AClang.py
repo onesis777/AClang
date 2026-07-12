@@ -12,7 +12,7 @@ class AClangTransformer(Transformer):
     def out_cmd(self, items):
         # items[0] には後ろの式が入っている
         expr = items[0]
-        return f"std::cout << {expr} << endl;"
+        return f"cout << {expr} << endl;"
     
     def string(self, items):
         return items[0]
@@ -22,3 +22,21 @@ class AClangTransformer(Transformer):
 
 # パーサーを作成
 perser = Lark(grammar, parser="lalr", transformer=AClangTransformer())
+
+# AClang.ac からAClangのコードを読み込む
+with open("AClang.ac", "r", encoding="utf-8") as f:
+    aclang_code = f.read()
+
+# パーサーでC++に変換
+cpp_code = perser.parse(aclang_code)
+cpp_template = """#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+"""
+
+# AClang.cpp にC++に変換したコードを書き込む
+with open("AClang.cpp", "w", encoding="utf-8") as f:
+    f.write(cpp_template)
+    f.write(str(cpp_code))
+    f.write("\n}")
