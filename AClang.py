@@ -13,10 +13,16 @@ class AClangTransformer(Transformer):
         # items[0] には後ろの式が入っている
         expr = items[0]
         return f"cout << {expr} << endl;"
+    
     def var_cmd(self, items):
         name = items[0]
         expr = items[1]
         return f"auto {name} = {expr};"
+    
+    def read_expr(self, items):
+        return "[](){ string s; cin >> s; return s; }()"
+    def iread_expr(self, items):
+        return "[](){ int n; cin >> n; return n; }()"
     
     def string(self, items):
         return items[0]

@@ -5,19 +5,21 @@
 ?cmd : out_cmd
      | var_cmd
 
-// out命令のルール
+// 命令のルール
 // "out"のあとに文が続く
 out_cmd : "out" expression
 
 // "変数名=" のあとに文が続く
 var_cmd : var_name "=" expression
 
-// 式 (expression) は文字列か数字
-?expression : STRING -> string
-            | NUMBER -> number
-            | CNAME -> cname
+// 式 (expression)
+?expression : STRING -> string // 文字列
+            | NUMBER -> number // 数字
+            | "read" -> read_expr // str型の入力
+            | "iread" -> iread_expr // int型の入力
+            | var_name // 変数名
 
-? var_name : CNAME -> cname
+?var_name : CNAME -> cname
 
 // Larkの組み込み正規表現をインポート
 %import common.ESCAPED_STRING -> STRING

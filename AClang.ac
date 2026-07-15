@@ -1,4 +1,4 @@
-n = 100
-a = "Hello"
-out n
-out a
+s = read
+m = iread
+out s
+out m
