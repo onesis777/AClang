@@ -1,4 +1,1 @@
-s = read
-m = iread
-out s
-out m
+out 1 + 2

@@ -21,8 +21,14 @@ class AClangTransformer(Transformer):
     
     def read_expr(self, items):
         return "[](){ string s; cin >> s; return s; }()"
+    
     def iread_expr(self, items):
         return "[](){ int n; cin >> n; return n; }()"
+    
+    def add(self, items):
+        number1 = items[0]
+        number2 = items[1]
+        return f"{number1} + {number2}"
     
     def string(self, items):
         return items[0]
