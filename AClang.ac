@@ -1,2 +1,4 @@
-out "Hello, World!"
-out 100
+n = 100
+a = "Hello"
+out n
+out a

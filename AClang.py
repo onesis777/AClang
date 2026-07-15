@@ -13,11 +13,18 @@ class AClangTransformer(Transformer):
         # items[0] には後ろの式が入っている
         expr = items[0]
         return f"cout << {expr} << endl;"
+    def var_cmd(self, items):
+        name = items[0]
+        expr = items[1]
+        return f"auto {name} = {expr};"
     
     def string(self, items):
         return items[0]
     
     def number(self, items):
+        return items[0]
+    
+    def cname(self, items):
         return items[0]
 
 # パーサーを作成
