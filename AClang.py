@@ -28,7 +28,48 @@ class AClangTransformer(Transformer):
     def add(self, items):
         number1 = items[0]
         number2 = items[1]
-        return f"{number1} + {number2}"
+        return f"({number1} + {number2})"
+    
+    def sub(self, items):
+        number1 = items[0]
+        number2 = items[1]
+        return f"({number1} - {number2})"
+    
+    def mul(self, items):
+        number1 = items[0]
+        number2 = items[1]
+        return f"({number1} * {number2})"
+    
+    def div(self, items):
+        number1 = items[0]
+        number2 = items[1]
+        return f"(static_cast<double>({number1}) / {number2})"
+    
+    def rounddiv(self, items):
+        number1 = items[0]
+        number2 = items[1]
+        return f"(static_cast<long long>({number1}) / static_cast<long long>({number2}))"
+    
+    def mod(self, items):
+        number1 = items[0]
+        number2 = items[1]
+        return f"static_cast<long long>({number1}) % static_cast<long long>({number2})"
+    
+    def intpow(self, items):
+        number1 = items[0]
+        number2 = items[1]
+        return f"intpow({number1}, {number2})"
+    
+    def modpow(self, items):
+        number1 = items[0]
+        number2 = items[1]
+        number3 = items[2]
+        return f"modpow({number1}, {number2}, {number3})"
+    
+    def doublepow(self, items):
+        number1 = items[0]
+        number2 = items[1]
+        return f"pow({number1}, {number2})"
     
     def string(self, items):
         return items[0]
@@ -40,16 +81,39 @@ class AClangTransformer(Transformer):
         return items[0]
 
 # パーサーを作成
-perser = Lark(grammar, parser="lalr", transformer=AClangTransformer())
+parser = Lark(grammar, parser="lalr", transformer=AClangTransformer())
 
 # AClang.ac からAClangのコードを読み込む
 with open("AClang.ac", "r", encoding="utf-8") as f:
     aclang_code = f.read()
 
 # パーサーでC++に変換
-cpp_code = perser.parse(aclang_code)
-cpp_template = """#include <bits/stdc++.h>
+cpp_code = parser.parse(aclang_code)
+cpp_template = """\
+#include <bits/stdc++.h>
 using namespace std;
+
+// x ^^ n のための繰り返し2乗法
+long long intpow(long long x, long long n) {
+    long long ret = 1;
+    while (n > 0) {
+        if (n & 1) ret *= x;
+        x *= x;
+        n >>= 1;
+    }
+    return ret;
+}
+
+// modpow のための繰り返し2乗法
+long long modpow(long long x, long long n, long long MOD) {
+    long long ret = 1;
+    while (n > 0) {
+        if (n & 1) ret = ret * x % MOD;
+        x = x * x % MOD;
+        n >>= 1;
+    }
+    return ret;
+}
 
 int main() {
 """
