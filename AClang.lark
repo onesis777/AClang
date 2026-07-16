@@ -24,7 +24,6 @@ var_cmd : var_name "=" expression
             | pow_expr  
 
 ?pow_expr   : primary "^^" pow_expr -> intpow
-            | primary "^%" expression "%" pow_expr -> modpow
             | primary "**" pow_expr -> doublepow
             | primary
 
