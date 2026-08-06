@@ -1,5 +1,17 @@
-#include <bits/stdc++.h>
-using namespace std;
+#include <iostream>
+#include <vector>
+#include <string>
+#include <algorithm>
+#include <cmath>
+#include <numeric>
+#include <map>
+#include <set>
+#include <queue>
+#include <stack>
+#include <tuple>
+
+// 入出力の高速化
+struct Init { Init() { std::ios::sync_with_stdio(0); std::cin.tie(0); } }init;
 
 // x ^^ n のための繰り返し2乗法
 long long intpow(long long x, long long n) {
@@ -23,6 +35,7 @@ long long modpow(long long x, long long n, long long MOD) {
     return ret;
 }
 
-int main() {
-cout << (((static_cast<long long>(((2 + 3) * 4)) / static_cast<long long>(2)) - static_cast<long long>(modpow(2, 5, 13)) % static_cast<long long>(3)) + intpow(2, pow(3, 2))) << endl;
+int main(void) {
+std::cout << std::boolalpha << ((1 == 2) || (333 > 1)) << "\n";
+return 0;
 }

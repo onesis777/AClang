@@ -10,9 +10,8 @@ class AClangTransformer(Transformer):
         return "\n".join(items)
     
     def out_cmd(self, items):
-        # items[0] には後ろの式が入っている
         expr = items[0]
-        return f"cout << {expr} << endl;"
+        return f'std::cout << std::boolalpha << {expr} << "\\n";'
     
     def var_cmd(self, items):
         name = items[0]
@@ -20,10 +19,10 @@ class AClangTransformer(Transformer):
         return f"auto {name} = {expr};"
     
     def read_expr(self, items):
-        return "[](){ string s; cin >> s; return s; }()"
+        return "[](){ string s; std::cin >> s; return s; }()"
     
     def iread_expr(self, items):
-        return "[](){ int n; cin >> n; return n; }()"
+        return "[](){ int n; std::cin >> n; return n; }()"
     
     def add(self, items):
         number1 = items[0]
@@ -53,7 +52,7 @@ class AClangTransformer(Transformer):
     def mod(self, items):
         number1 = items[0]
         number2 = items[1]
-        return f"static_cast<long long>({number1}) % static_cast<long long>({number2})"
+        return f"(static_cast<long long>({number1}) % static_cast<long long>({number2}))"
     
     def intpow(self, items):
         number1 = items[0]
@@ -71,6 +70,50 @@ class AClangTransformer(Transformer):
         number2 = items[1]
         return f"pow({number1}, {number2})"
     
+    def eq(self, items):
+        expr1 = items[0]
+        expr2 = items[1]
+        return f"({expr1} == {expr2})"
+
+    def neq(self, items):
+        expr1 = items[0]
+        expr2 = items[1]
+        return f"({expr1} != {expr2})"
+
+    def lte(self, items):
+        expr1 = items[0]
+        expr2 = items[1]
+        return f"({expr1} <= {expr2})"
+
+    def gte(self, items):
+        expr1 = items[0]
+        expr2 = items[1]
+        return f"({expr1} >= {expr2})"
+
+    def lt(self, items):
+        expr1 = items[0]
+        expr2 = items[1]
+        return f"({expr1} < {expr2})"
+
+    def gt(self, items):
+        expr1 = items[0]
+        expr2 = items[1]
+        return f"({expr1} > {expr2})"
+        
+    def log_or(self, items):
+        expr1 = items[0]
+        expr2 = items[1]
+        return f"({expr1} || {expr2})"
+    
+    def log_and(self, items):
+        expr1 = items[0]
+        expr2 = items[1]
+        return f"({expr1} && {expr2})"
+    
+    def log_not(self, items):
+        expr = items[0]
+        return f"!({expr})"
+    
     def string(self, items):
         return items[0]
     
@@ -78,6 +121,12 @@ class AClangTransformer(Transformer):
         return items[0]
     
     def cname(self, items):
+        return items[0]
+    
+    def true_lit(self, items):
+        return items[0]
+    
+    def false_lit(self, items):
         return items[0]
 
 # パーサーを作成
@@ -90,8 +139,20 @@ with open("AClang.ac", "r", encoding="utf-8") as f:
 # パーサーでC++に変換
 cpp_code = parser.parse(aclang_code)
 cpp_template = """\
-#include <bits/stdc++.h>
-using namespace std;
+#include <iostream>
+#include <vector>
+#include <string>
+#include <algorithm>
+#include <cmath>
+#include <numeric>
+#include <map>
+#include <set>
+#include <queue>
+#include <stack>
+#include <tuple>
+
+// 入出力の高速化
+struct Init { Init() { std::ios::sync_with_stdio(0); std::cin.tie(0); } }init;
 
 // x ^^ n のための繰り返し2乗法
 long long intpow(long long x, long long n) {
@@ -115,11 +176,11 @@ long long modpow(long long x, long long n, long long MOD) {
     return ret;
 }
 
-int main() {
+int main(void) {
 """
 
 # AClang.cpp にC++に変換したコードを書き込む
 with open("AClang.cpp", "w", encoding="utf-8") as f:
     f.write(cpp_template)
     f.write(str(cpp_code))
-    f.write("\n}")
+    f.write("\nreturn 0;\n}")
