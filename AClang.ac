@@ -1,1 +1,8 @@
-out 1 == 2 || 333 > 1
+n = 114514
+if n == 1:
+    out 100
+elif n != 2:
+    out 200
+else:
+    out 300
+end

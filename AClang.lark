@@ -4,6 +4,7 @@
 // 命令の種類
 ?cmd : out_cmd
      | var_cmd
+     | if_stmt
 
 // 命令のルール
 // "out"のあとに文が続く
@@ -60,6 +61,12 @@ var_cmd : var_name "=" expression
 
 // 変数名
 ?var_name : CNAME -> cname
+
+// ステートメントブロック
+block: cmd+
+
+// if文
+if_stmt: "if" expression [":"] block ("elif" expression [":"] block)* ["else" [":"] block] "end"
 
 // Larkの組み込み正規表現をインポート
 %import common.ESCAPED_STRING -> STRING

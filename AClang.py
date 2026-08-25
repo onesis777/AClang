@@ -9,6 +9,33 @@ class AClangTransformer(Transformer):
     def start(self, items):
         return "\n".join(items)
     
+    def block(self, items):
+        return "\n".join(items)
+    
+    def if_stmt(self, items):
+        # if
+        if_cond = items[0]
+        if_block = items[1]
+        cpp_code = [f"if {if_cond} {{\n    {if_block}\n}} "]
+        
+        # else
+        i = 2
+        while i < len(items):
+            # 最後の要素なら else
+            # 最後の餃子か
+            if i == len(items) - 1:
+                else_block = items[i]
+                cpp_code.append(f"else {{\n    {else_block}\n}}")
+                break
+            # elif
+            else:
+                elif_cond = items[i]
+                elif_block = items[i + 1]
+                cpp_code.append(f"else if {elif_cond} {{\n    {elif_block} \n}} ")
+                i += 2
+                
+        return "".join(cpp_code)
+
     def out_cmd(self, items):
         expr = items[0]
         return f'std::cout << std::boolalpha << {expr} << "\\n";'

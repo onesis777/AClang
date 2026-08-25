@@ -36,6 +36,13 @@ long long modpow(long long x, long long n, long long MOD) {
 }
 
 int main(void) {
-std::cout << std::boolalpha << ((1 == 2) || (333 > 1)) << "\n";
+auto n = 114514;
+if (n == 1) {
+    std::cout << std::boolalpha << 100 << "\n";
+} else if (n != 2) {
+    std::cout << std::boolalpha << 200 << "\n"; 
+} else {
+    std::cout << std::boolalpha << 300 << "\n";
+}
 return 0;
 }
