@@ -12,6 +12,12 @@ class AClangTransformer(Transformer):
     def block(self, items):
         return "\n".join(items)
     
+    def var_list(self, items):
+        return items
+
+    def expr_list(self, items):
+        return items
+    
     def if_stmt(self, items):
         # if
         if_cond = items[0]
@@ -41,9 +47,22 @@ class AClangTransformer(Transformer):
         return f'std::cout << std::boolalpha << {expr} << "\\n";'
     
     def var_cmd(self, items):
-        name = items[0]
-        expr = items[1]
-        return f"auto {name} = {expr};"
+        vars_ = items[0]
+        exprs = items[1]
+        # 複数の入力をカンマ区切りで同時に受け取る
+        if len(vars_) > 1 and len(exprs) == 1 and "std::cin" in exprs[0]:
+            decl = f"long long {', '.join(vars_)};"
+            cin = f"std::cin >> {' >> '.join(vars_)};"
+            return f"{decl}\n{cin}"
+
+        # 単一代入
+        if len(vars_) == 1 and len(exprs) == 1:
+            return f"auto {vars_[0]} = {exprs[0]};"
+
+        # 複数代入
+        var_str = ", ".join(vars_)
+        expr_str = ", ".join(exprs)
+        return f"auto [{var_str}] = std::make_tuple({expr_str});"
     
     def read_expr(self, items):
         return "[](){ string s; std::cin >> s; return s; }()"

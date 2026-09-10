@@ -11,7 +11,10 @@
 out_cmd : "out" expression
 
 // "変数名=" のあとに文が続く
-var_cmd : var_name "=" expression
+var_cmd : var_list "=" expr_list
+
+var_list : var_name ("," var_name)*
+expr_list : expression ("," expression)*
 
 // 文のトップ
 ?expression : logical_or
