@@ -6,6 +6,11 @@ with open("AClang.lark", "r", encoding="utf-8") as f:
 
 # 変換器
 class AClangTransformer(Transformer):
+    def __init__(self):
+        super().__init__()
+        # 宣言済みの変数を記憶しておくset
+        self.declared_vars = set()
+    
     def start(self, items):
         return "\n".join(items)
     
@@ -19,6 +24,8 @@ class AClangTransformer(Transformer):
         return items
     
     def if_stmt(self, items):
+        # items から None を取り除く
+        items = [x for x in items if x is not None]
         # if
         if_cond = items[0]
         if_block = items[1]
@@ -41,6 +48,18 @@ class AClangTransformer(Transformer):
                 i += 2
                 
         return "".join(cpp_code)
+    
+    def for_stmt(self, items):
+        # items から None を取り除く
+        items = [x for x in items if x is not None]
+        for_var = items[0] # 添字
+        start_expr = items[1]
+        stop_expr = items[2]
+        block_code = items[-1]
+        step_expr = "1" if len(items) == 4 else items[3]
+        return f"""for (long long {for_var} = {start_expr}; {for_var} < {stop_expr}; {for_var} += {step_expr}) {{
+{block_code}
+}}"""
 
     def out_cmd(self, items):
         expr = items[0]
@@ -49,20 +68,42 @@ class AClangTransformer(Transformer):
     def var_cmd(self, items):
         vars_ = items[0]
         exprs = items[1]
+        # 未宣言の変数
+        new_vars = [v for v in vars_ if v not in self.declared_vars]
+        
         # 複数の入力をカンマ区切りで同時に受け取る
         if len(vars_) > 1 and len(exprs) == 1 and "std::cin" in exprs[0]:
-            decl = f"long long {', '.join(vars_)};"
+            # 新しい変数だけを long long で宣言する
+            decl = f"long long {', '.join(new_vars)};\n" if new_vars else ""
             cin = f"std::cin >> {' >> '.join(vars_)};"
-            return f"{decl}\n{cin}"
+            self.declared_vars.update(new_vars) # 未宣言の変数を declared_vars に追加
+            return f"{decl}{cin}"
 
         # 単一代入
-        if len(vars_) == 1 and len(exprs) == 1:
-            return f"auto {vars_[0]} = {exprs[0]};"
+        if len(vars_) == len(exprs) == 1:
+            var_name = vars_[0]
+            # 再代入の場合、autoを付けない
+            if var_name in self.declared_vars:
+                return f"{var_name} = {exprs[0]};"
+            # 変数宣言時は、autoを付ける
+            # 宣言した変数は declared_vars に追加する
+            else:
+                self.declared_vars.add(var_name)
+                return f"auto {var_name} = {exprs[0]};"
 
         # 複数代入
         var_str = ", ".join(vars_)
         expr_str = ", ".join(exprs)
-        return f"auto [{var_str}] = std::make_tuple({expr_str});"
+        # すべて未宣言の変数なら auto をつける
+        if len(new_vars) == len(vars_):
+            self.declared_vars.update(vars_)
+            return f"auto [{var_str}] = std::make_tuple({expr_str});"
+            
+        # 宣言済みの変数が混ざっている場合は、新しい変数だけ宣言してから std::tie を使う
+        else:
+            decl = f"long long {', '.join(new_vars)};\n" if new_vars else ""
+            self.declared_vars.update(new_vars)
+            return f"{decl}std::tie({var_str}) = std::make_tuple({expr_str});"
     
     def read_expr(self, items):
         return "[](){ string s; std::cin >> s; return s; }()"

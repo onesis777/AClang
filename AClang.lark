@@ -5,6 +5,7 @@
 ?cmd : out_cmd
      | var_cmd
      | if_stmt
+     | for_stmt
 
 // 命令のルール
 // "out"のあとに文が続く
@@ -71,9 +72,14 @@ block: cmd+
 // if文
 if_stmt: "if" expression [":"] block ("elif" expression [":"] block)* ["else" [":"] block] "end"
 
+// for文
+for_stmt: "for" var_name "in" expression ".." expression [".." expression] [":"] block "end"
+
 // Larkの組み込み正規表現をインポート
 %import common.ESCAPED_STRING -> STRING
-%import common.SIGNED_NUMBER  -> NUMBER
 %import common.CNAME
 %import common.WS
 %ignore WS // 空白文字を無視
+
+// ドットの後に必ず1文字以上の数字を要求する NUMBER を定義
+NUMBER: /[+-]?[0-9]+(\.[0-9]+)?/

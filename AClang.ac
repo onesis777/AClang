@@ -1,10 +1,9 @@
-A, B = iread
-if 15 <= A + B && 8 <= B
-    out 1
-elif 10 <= A + B && 3 <= B
-    out 2
-elif 3 <= A + B
-    out 3
-else
-    out 4
+N = iread
+ans = 0
+for i in 0..N
+    A, B = iread
+    if A < B
+        ans = ans + 1
+    end
 end
+out ans

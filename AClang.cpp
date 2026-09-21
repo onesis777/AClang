@@ -36,16 +36,15 @@ long long modpow(long long x, long long n, long long MOD) {
 }
 
 int main(void) {
+auto N = [](){ int n; std::cin >> n; return n; }();
+auto ans = 0;
+for (long long i = 0; i < N; i += 1) {
 long long A, B;
 std::cin >> A >> B;
-if ((15 <= (A + B)) && (8 <= B)) {
-    std::cout << std::boolalpha << 1 << "\n";
-} else if ((10 <= (A + B)) && (3 <= B)) {
-    std::cout << std::boolalpha << 2 << "\n"; 
-} else if (3 <= (A + B)) {
-    std::cout << std::boolalpha << 3 << "\n"; 
-} else {
-    std::cout << std::boolalpha << 4 << "\n";
+if (A < B) {
+    ans = (ans + 1);
+} 
 }
+std::cout << std::boolalpha << ans << "\n";
 return 0;
 }
