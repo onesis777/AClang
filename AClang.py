@@ -68,8 +68,8 @@ class AClangTransformer(Transformer):
     def var_cmd(self, items):
         vars_ = items[0]
         exprs = items[1]
-        # 未宣言の変数
-        new_vars = [v for v in vars_ if v not in self.declared_vars]
+        # 未宣言の変数(配列アクセスではないもの)
+        new_vars = [v for v in vars_ if v not in self.declared_vars and "[" not in v]
         
         # 複数の入力をカンマ区切りで同時に受け取る
         if len(vars_) > 1 and len(exprs) == 1 and "std::cin" in exprs[0]:
@@ -82,8 +82,8 @@ class AClangTransformer(Transformer):
         # 単一代入
         if len(vars_) == len(exprs) == 1:
             var_name = vars_[0]
-            # 再代入の場合、autoを付けない
-            if var_name in self.declared_vars:
+            # 再代入や配列アクセスの場合、autoを付けない
+            if var_name in self.declared_vars or "[" in var_name:
                 return f"{var_name} = {exprs[0]};"
             # 変数宣言時は、autoを付ける
             # 宣言した変数は declared_vars に追加する
@@ -105,11 +105,34 @@ class AClangTransformer(Transformer):
             self.declared_vars.update(new_vars)
             return f"{decl}std::tie({var_str}) = std::make_tuple({expr_str});"
     
+    def vector(self, items):
+        elements = [x for x in items if x is not None] # None を取り除いた vector の中身
+        return f"std::vector{{{', '.join(elements)}}}"
+    
+    def vector_access(self, items):
+        var_name = items[0]
+        index_expr = items[1]
+        return f"{var_name}[{index_expr}]"
+    
+    def read_vector(self, items):
+        return f"""[&]{{
+    std::vector<string> _v({items[0]});
+    for (string& _x : _v) std::cin >> _x;
+    return _v;
+}}()"""
+    
+    def iread_vector(self, items):
+        return f"""[&]{{
+    std::vector<long long> _v({items[0]});
+    for (long long& _x : _v) std::cin >> _x;
+    return _v;
+}}()"""
+
     def read_expr(self, items):
-        return "[](){ string s; std::cin >> s; return s; }()"
+        return "[]{ string s; std::cin >> s; return s; }()"
     
     def iread_expr(self, items):
-        return "[](){ int n; std::cin >> n; return n; }()"
+        return "[]{ int n; std::cin >> n; return n; }()"
     
     def add(self, items):
         number1 = items[0]

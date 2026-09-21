@@ -14,7 +14,11 @@ out_cmd : "out" expression
 // "変数名=" のあとに文が続く
 var_cmd : var_list "=" expr_list
 
-var_list : var_name ("," var_name)*
+// 左辺には変数名か配列へのアクセスが来る
+?assign_target : var_name
+               | var_name "[" expression "]" -> array_access
+
+var_list : assign_target ("," assign_target)*
 expr_list : expression ("," expression)*
 
 // 文のトップ
@@ -57,14 +61,21 @@ expr_list : expression ("," expression)*
             | "true" -> true_lit
             | "false" -> false_lit
             | "!" primary -> log_not
+            | var_name "[" expression "]" -> vector_access
             | var_name
+            | "read" "[" expression "]" -> read_vector
+            | "iread" "[" expression "]" -> iread_vector
             | "read" -> read_expr
             | "iread" -> iread_expr
             | "modpow" "(" expression "," expression "," expression ")" -> modpow
             | "(" expression ")"
+            | vector
 
 // 変数名
 ?var_name : CNAME -> cname
+
+// 配列(vector)の定義
+vector: "[" [expression ("," expression)*] "]"
 
 // ステートメントブロック
 block: cmd+

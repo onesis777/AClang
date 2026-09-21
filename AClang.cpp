@@ -10,6 +10,11 @@
 #include <stack>
 #include <tuple>
 
+// オンラインジャッジでなければ配列外参照にエラーを出す
+#ifndef ONLINE_JUDGE
+#define _GLIBCXX_DEBUG
+#endif
+
 // 入出力の高速化
 struct Init { Init() { std::ios::sync_with_stdio(0); std::cin.tie(0); } }init;
 
@@ -36,7 +41,7 @@ long long modpow(long long x, long long n, long long MOD) {
 }
 
 int main(void) {
-auto N = [](){ int n; std::cin >> n; return n; }();
+auto N = []{ int n; std::cin >> n; return n; }();
 auto ans = 0;
 for (long long i = 0; i < N; i += 1) {
 long long A, B;
