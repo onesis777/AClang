@@ -1,9 +1,8 @@
 N = iread
-ans = 0
+T = iread[N]
+ti = [[]]
 for i in 0..N
-    A, B = iread
-    if A < B
-        ans = ans + 1
-    end
+    ti << [T[i], i + 1]
 end
-out ans
+sort ti
+out ti[0][1], ti[1][1], ti[2][1]

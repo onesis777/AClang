@@ -4,21 +4,26 @@
 // 命令の種類
 ?cmd : out_cmd
      | var_cmd
+     | sort_cmd
+     | append_cmd
      | if_stmt
      | for_stmt
 
 // 命令のルール
 // "out"のあとに文が続く
-out_cmd : "out" expression
+out_cmd : "out" expr_list
 
 // "変数名=" のあとに文が続く
 var_cmd : var_list "=" expr_list
 
-// 左辺には変数名か配列へのアクセスが来る
-?assign_target : var_name
-               | var_name "[" expression "]" -> array_access
+// "sort" または "rsort" のあとに変数名が続く
+sort_cmd : "sort" primary  -> sort_asc
+         | "rsort" primary -> sort_desc
 
-var_list : assign_target ("," assign_target)*
+// 左辺のあとに"<<"が来て右辺が続く
+append_cmd : var_name "<<" expression
+
+var_list : primary ("," primary)*
 expr_list : expression ("," expression)*
 
 // 文のトップ
@@ -61,7 +66,7 @@ expr_list : expression ("," expression)*
             | "true" -> true_lit
             | "false" -> false_lit
             | "!" primary -> log_not
-            | var_name "[" expression "]" -> vector_access
+            | primary "[" expression "]" -> vector_access
             | var_name
             | "read" "[" expression "]" -> read_vector
             | "iread" "[" expression "]" -> iread_vector
@@ -69,10 +74,14 @@ expr_list : expression ("," expression)*
             | "iread" -> iread_expr
             | "modpow" "(" expression "," expression "," expression ")" -> modpow
             | "(" expression ")"
+            | vector_init
             | vector
 
 // 変数名
 ?var_name : CNAME -> cname
+
+// 配列の初期化
+vector_init: "[" expression "]" "*" expression
 
 // 配列(vector)の定義
 vector: "[" [expression ("," expression)*] "]"

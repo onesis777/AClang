@@ -62,8 +62,11 @@ class AClangTransformer(Transformer):
 }}"""
 
     def out_cmd(self, items):
-        expr = items[0]
-        return f'std::cout << std::boolalpha << {expr} << "\\n";'
+        exprs = items[0]
+        if isinstance(exprs, list):
+            exprs = ' << " " << '.join(exprs)
+            return f'std::cout << std::boolalpha << {exprs} << "\\n";'
+        return f'std::cout << std::boolalpha << {exprs} << "\\n";'
     
     def var_cmd(self, items):
         vars_ = items[0]
@@ -105,14 +108,40 @@ class AClangTransformer(Transformer):
             self.declared_vars.update(new_vars)
             return f"{decl}std::tie({var_str}) = std::make_tuple({expr_str});"
     
+    def sort_asc(self, items):
+        target = items[0]
+        return f"std::sort({target}.begin(), {target}.end());"
+    
+    def sort_desc(self, items):
+        target = items[0]
+        return f"std::sort({target}.rbegin(), {target}.rend());"
+    
+    def append_cmd(self, items):
+        target = items[0]
+        value = items[1]
+        return f"{target}.push_back({value});"
+    
     def vector(self, items):
         elements = [x for x in items if x is not None] # None を取り除いた vector の中身
+        # 空配列[]
+        if elements == []:
+            return "std::vector<long long>()"
+        # 二次元空配列[[]]
+        elif len(items) == 1 and items[0] == "std::vector<long long>()":
+            return "std::vector<std::vector<long long>>()"
         return f"std::vector{{{', '.join(elements)}}}"
     
     def vector_access(self, items):
         var_name = items[0]
         index_expr = items[1]
         return f"{var_name}[{index_expr}]"
+    
+    def vector_init(self, items):
+        value = items[0]
+        size = items[1]
+        if "std::vector" in value:
+            return f"std::vector({size}, {value})"
+        return f"std::vector<long long>({size}, {value})"
     
     def read_vector(self, items):
         return f"""[&]{{
@@ -260,6 +289,11 @@ cpp_template = """\
 #include <queue>
 #include <stack>
 #include <tuple>
+
+// オンラインジャッジでなければ配列外参照にエラーを出す
+#ifndef ONLINE_JUDGE
+#define _GLIBCXX_DEBUG
+#endif
 
 // 入出力の高速化
 struct Init { Init() { std::ios::sync_with_stdio(0); std::cin.tie(0); } }init;
