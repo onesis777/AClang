@@ -8,6 +8,9 @@
      | append_cmd
      | if_stmt
      | for_stmt
+     | while_stmt
+     | break_stmt
+     | continue_stmt
 
 // 命令のルール
 // "out"のあとに文が続く
@@ -94,6 +97,12 @@ if_stmt: "if" expression [":"] block ("elif" expression [":"] block)* ["else" ["
 
 // for文
 for_stmt: "for" var_name "in" expression ".." expression [".." expression] [":"] block "end"
+
+// while文
+while_stmt: "while" expression [":"] block "end"
+
+break_stmt: "break"
+continue_stmt: "continue"
 
 // Larkの組み込み正規表現をインポート
 %import common.ESCAPED_STRING -> STRING

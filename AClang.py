@@ -61,11 +61,23 @@ class AClangTransformer(Transformer):
 {block_code}
 }}"""
 
+    def while_stmt(self, items):
+        while_cond = items[0]
+        block_code = items[1]
+        return f"""while ({while_cond}) {{
+{block_code}
+}}"""
+
+    def break_stmt(self, items):
+        return "break;"
+
+    def continue_stmt(self, items):
+        return "continue;"
+
     def out_cmd(self, items):
         exprs = items[0]
         if isinstance(exprs, list):
             exprs = ' << " " << '.join(exprs)
-            return f'std::cout << std::boolalpha << {exprs} << "\\n";'
         return f'std::cout << std::boolalpha << {exprs} << "\\n";'
     
     def var_cmd(self, items):
