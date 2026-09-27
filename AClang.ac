@@ -1,8 +1,6 @@
 N = iread
-T = iread[N]
-ti = [[]]
-for i in 0..N
-    ti << [T[i], i + 1]
+i = 0
+while i < N
+    out "ya!"
+    i = i + 1
 end
-sort ti
-out ti[0][1], ti[1][1], ti[2][1]
