@@ -120,6 +120,46 @@ class AClangTransformer(Transformer):
             self.declared_vars.update(new_vars)
             return f"{decl}std::tie({var_str}) = std::make_tuple({expr_str});"
     
+    def add_assign_cmd(self, items):
+        target = items[0]
+        value = items[1]
+        return f"{target} += {value};"
+
+    def sub_assign_cmd(self, items):
+        target = items[0]
+        value = items[1]
+        return f"{target} -= {value};"
+
+    def mul_assign_cmd(self, items):
+        target = items[0]
+        value = items[1]
+        return f"{target} *= {value};"
+
+    def div_assign_cmd(self, items):
+        target = items[0]
+        value = items[1]
+        return f"{target} /= {value};"
+    
+    def rounddiv_assign_cmd(self, items):
+        target = items[0]
+        value = items[1]
+        return f"{target} = static_cast<long long>({target}) / static_cast<long long>({value});"
+
+    def mod_assign_cmd(self, items):
+        target = items[0]
+        value = items[1]
+        return f"{target} %= {value};"
+    
+    def intpow_assign_cmd(self, items):
+        target = items[0]
+        value = items[1]
+        return f"{target} = intpow({target}, {value});"
+
+    def doublepow_assign_cmd(self, items):
+        target = items[0]
+        value = items[1]
+        return f"{target} = pow({target}, {value});"
+
     def sort_asc(self, items):
         target = items[0]
         return f"std::sort({target}.begin(), {target}.end());"

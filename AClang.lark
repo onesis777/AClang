@@ -4,6 +4,14 @@
 // 命令の種類
 ?cmd : out_cmd
      | var_cmd
+     | add_assign_cmd
+     | sub_assign_cmd
+     | mul_assign_cmd
+     | div_assign_cmd
+     | rounddiv_assign_cmd
+     | mod_assign_cmd
+     | intpow_assign_cmd
+     | doublepow_assign_cmd
      | sort_cmd
      | append_cmd
      | if_stmt
@@ -18,6 +26,15 @@ out_cmd : "out" expr_list
 
 // "変数名=" のあとに文が続く
 var_cmd : var_list "=" expr_list
+
+add_assign_cmd : primary "+=" expression
+sub_assign_cmd : primary "-=" expression
+mul_assign_cmd : primary "*=" expression
+div_assign_cmd : primary "/=" expression
+rounddiv_assign_cmd : primary "/_=" expression
+mod_assign_cmd : primary "%=" expression
+intpow_assign_cmd : primary "^^=" expression
+doublepow_assign_cmd : primary "**=" expression
 
 // "sort" または "rsort" のあとに変数名が続く
 sort_cmd : "sort" primary  -> sort_asc
