@@ -58,7 +58,7 @@ expr_list : expression ("," expression)*
             | mul_expr "/" pow_expr -> div
             | mul_expr "/_" pow_expr -> rounddiv
             | mul_expr "%" pow_expr -> mod
-            | pow_expr  
+            | pow_expr
 
 ?pow_expr   : primary "^^" pow_expr -> intpow
             | primary "**" pow_expr -> doublepow
