@@ -68,6 +68,15 @@ class AClangTransformer(Transformer):
 {block_code}
 }}"""
 
+    def rep_stmt(self, items):
+        rep_var = "_i" if items[0] is None else items[0]
+        stop_var = items[1]
+        block_code = items[-1]
+        return f"""for (long long {rep_var} = 0; {rep_var} < {stop_var}; {rep_var}++) {{
+{block_code}
+}}
+"""
+
     def break_stmt(self, items):
         return "break;"
 
