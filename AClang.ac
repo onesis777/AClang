@@ -1,6 +1,11 @@
-N = iread
-i = 0
-while i < N
-    out "ya!"
-    i = i + 1
+a, b = iread
+
+def is_even(n: int)
+    return n % 2 == 0
+end
+
+if is_even(a * b)
+    out "Even"
+else
+    out "Odd"
 end

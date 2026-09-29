@@ -23,13 +23,27 @@ class AClangTransformer(Transformer):
     def expr_list(self, items):
         return items
     
+    def typed_var(self, items):
+        var_name = items[0]
+        type_str = items[1]
+        
+        types = {
+            "int": "long long",
+            "float": "double",
+            "string": "std::string",
+            "str": "std::string"
+        }
+        
+        cpp_type = types.get(type_str, type_str)
+        return (var_name, cpp_type)
+
     def if_stmt(self, items):
         # items から None を取り除く
         items = [x for x in items if x is not None]
         # if
         if_cond = items[0]
         if_block = items[1]
-        cpp_code = [f"if {if_cond} {{\n    {if_block}\n}} "]
+        cpp_code = [f"if ({if_cond}) {{\n    {if_block}\n}} "]
         
         # else
         i = 2
@@ -77,6 +91,45 @@ class AClangTransformer(Transformer):
 }}
 """
 
+    def def_stmt(self, items):
+        items = [x for x in items if x is not None]
+        func_name = items[0]
+        block_code = items[-1]
+        
+        # itemsの0番目が関数名、-1番目がblockなので、それ以外が引数
+        args = items[1:-1]
+        cpp_args = []
+        
+        for arg in args:
+            # 型注釈がついているか (=タプルか)
+            if isinstance(arg, tuple):
+                cpp_args.append(f"{arg[1]} {arg[0]}")
+            # 型注釈がついていなければlong long 型とする
+            else:
+                cpp_args.append(f"long long {arg}")
+                
+        cpp_args = ", ".join(cpp_args)
+        
+        # 引数以外の外の変数をすべてキャプチャするラムダ式
+        return f"""auto {func_name} = [&]( {cpp_args} ) {{
+{block_code}
+}};"""
+    
+    def return_stmt(self, items):
+        return f"return {items[0]};"
+    
+    def func_call(self, items):
+        # None を取り除く
+        items = [x for x in items if x is not None]
+        func_name = items[0]
+        args = items[1:]
+        args = ', '.join(args)
+        return f"{func_name}({args})"
+
+    def func_call_cmd(self, items):
+        # 返り値のない関数呼び出しの場合は、末尾にセミコロンをつける
+        return f"{items[0]};"
+    
     def break_stmt(self, items):
         return "break;"
 
@@ -90,15 +143,36 @@ class AClangTransformer(Transformer):
         return f'std::cout << std::boolalpha << {exprs} << "\\n";'
     
     def var_cmd(self, items):
-        vars_ = items[0]
+        raw_vars = items[0]
         exprs = items[1]
+        
+        vars_ = []
+        typed_vars = {}
+        for v in raw_vars:
+            if isinstance(v, tuple):
+                vars_.append(v[0])
+                typed_vars[v[0]] = v[1]
+            else:
+                vars_.append(v)
+
         # 未宣言の変数(配列アクセスではないもの)
         new_vars = [v for v in vars_ if v not in self.declared_vars and "[" not in v]
         
         # 複数の入力をカンマ区切りで同時に受け取る
         if len(vars_) > 1 and len(exprs) == 1 and "std::cin" in exprs[0]:
-            # 新しい変数だけを long long で宣言する
-            decl = f"long long {', '.join(new_vars)};\n" if new_vars else ""
+            # ラムダ式の文字列の中に "string" が入っていれば read (文字列入力) と判定
+            if "std::string" in exprs[0]:
+                default_type = "std::string"
+            else:
+                default_type = "long long" # iread (数値入力)
+
+            # 新しい変数だけ宣言する（型注釈があればそれを優先、なければ default_type）
+            if new_vars:
+                decl_lines = [f"{typed_vars[v]} {v};" if v in typed_vars else f"{default_type} {v};" for v in new_vars]
+                decl = "\n".join(decl_lines) + "\n"
+            else:
+                decl = ""
+            
             cin = f"std::cin >> {' >> '.join(vars_)};"
             self.declared_vars.update(new_vars) # 未宣言の変数を declared_vars に追加
             return f"{decl}{cin}"
@@ -106,11 +180,17 @@ class AClangTransformer(Transformer):
         # 単一代入
         if len(vars_) == len(exprs) == 1:
             var_name = vars_[0]
+            
+            # 型注釈がある場合は指定された型で宣言する
+            if var_name in typed_vars:
+                cpp_type = typed_vars[var_name]
+                self.declared_vars.add(var_name)
+                return f"{cpp_type} {var_name} = {exprs[0]};"
+
             # 再代入や配列アクセスの場合、autoを付けない
             if var_name in self.declared_vars or "[" in var_name:
                 return f"{var_name} = {exprs[0]};"
             # 変数宣言時は、autoを付ける
-            # 宣言した変数は declared_vars に追加する
             else:
                 self.declared_vars.add(var_name)
                 return f"auto {var_name} = {exprs[0]};"
@@ -118,6 +198,17 @@ class AClangTransformer(Transformer):
         # 複数代入
         var_str = ", ".join(vars_)
         expr_str = ", ".join(exprs)
+        
+        # 複数代入の中に型注釈が含まれる場合は tie を使う
+        if typed_vars:
+            if new_vars:
+                decl_lines = [f"{typed_vars[v]} {v};" if v in typed_vars else f"long long {v};" for v in new_vars]
+                decl = "\n".join(decl_lines) + "\n"
+            else:
+                decl = ""
+            self.declared_vars.update(new_vars)
+            return f"{decl}std::tie({var_str}) = std::make_tuple({expr_str});"
+
         # すべて未宣言の変数なら auto をつける
         if len(new_vars) == len(vars_):
             self.declared_vars.update(vars_)
@@ -128,7 +219,7 @@ class AClangTransformer(Transformer):
             decl = f"long long {', '.join(new_vars)};\n" if new_vars else ""
             self.declared_vars.update(new_vars)
             return f"{decl}std::tie({var_str}) = std::make_tuple({expr_str});"
-    
+
     def add_assign_cmd(self, items):
         target = items[0]
         value = items[1]
@@ -206,8 +297,8 @@ class AClangTransformer(Transformer):
     
     def read_vector(self, items):
         return f"""[&]{{
-    std::vector<string> _v({items[0]});
-    for (string& _x : _v) std::cin >> _x;
+    std::vector<std::string> _v({items[0]});
+    for (std::string& _x : _v) std::cin >> _x;
     return _v;
 }}()"""
     
@@ -219,10 +310,10 @@ class AClangTransformer(Transformer):
 }}()"""
 
     def read_expr(self, items):
-        return "[]{ string s; std::cin >> s; return s; }()"
+        return "[]{ std::string s; std::cin >> s; return s; }()"
     
     def iread_expr(self, items):
-        return "[]{ int n; std::cin >> n; return n; }()"
+        return "[]{ long long n; std::cin >> n; return n; }()"
     
     def add(self, items):
         number1 = items[0]

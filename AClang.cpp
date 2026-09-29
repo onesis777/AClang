@@ -41,11 +41,16 @@ long long modpow(long long x, long long n, long long MOD) {
 }
 
 int main(void) {
-auto N = []{ int n; std::cin >> n; return n; }();
-auto i = 0;
-while ((i < N)) {
-std::cout << std::boolalpha << "ya!" << "\n";
-i = (i + 1);
+long long a;
+long long b;
+std::cin >> a >> b;
+auto is_even = [&]( long long n ) {
+return ((static_cast<long long>(n) % static_cast<long long>(2)) == 0);
+};
+if (is_even((a * b))) {
+    std::cout << std::boolalpha << "Even" << "\n";
+} else {
+    std::cout << std::boolalpha << "Odd" << "\n";
 }
 return 0;
 }

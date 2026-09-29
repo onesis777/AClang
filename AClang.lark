@@ -17,6 +17,10 @@
      | if_stmt
      | for_stmt
      | while_stmt
+     | rep_stmt
+     | def_stmt
+     | return_stmt
+     | func_call_cmd // 返り値を使わない関数呼び出し
      | break_stmt
      | continue_stmt
 
@@ -43,7 +47,17 @@ sort_cmd : "sort" primary  -> sort_asc
 // 左辺のあとに"<<"が来て右辺が続く
 append_cmd : var_name "<<" expression
 
-var_list : primary ("," primary)*
+var_list : var_item ("," var_item)*
+
+// 変数の要素
+// 変数そのものと配列アクセスを同じ var_ref にまとめる。
+// これにより、a[0] を var_item と atom の2通りに解釈する競合を防ぐ。
+?var_item : typed_var
+          | var_ref
+
+// 型付き変数
+typed_var: var_name ":" var_name
+
 expr_list : expression ("," expression)*
 
 // 文のトップ
@@ -77,17 +91,30 @@ expr_list : expression ("," expression)*
             | mul_expr "%" pow_expr -> mod
             | pow_expr
 
-?pow_expr   : primary "^^" pow_expr -> intpow
-            | primary "**" pow_expr -> doublepow
+// べき乗の優先順位の次を unary_expr に変更
+?pow_expr   : unary_expr "^^" pow_expr -> intpow
+            | unary_expr "**" pow_expr -> doublepow
+            | unary_expr
+
+// 前置演算子（論理否定など）の階層
+?unary_expr : "!" unary_expr -> log_not
             | primary
 
-?primary    : STRING -> string
+// 配列アクセスは変数参照に限定して扱う。
+// 関数呼び出し結果など任意の式への [] は、この文法では扱わない。
+?primary    : var_ref
+            | atom
+
+// 変数参照（配列アクセスを含む）
+?var_ref    : var_name
+            | var_ref "[" expression "]" -> vector_access
+
+// 最小単位（リテラル、関数呼び出しなど）
+?atom       : STRING -> string
             | NUMBER -> number
             | "true" -> true_lit
             | "false" -> false_lit
-            | "!" primary -> log_not
-            | primary "[" expression "]" -> vector_access
-            | var_name
+            | func_call // 返り値を使う関数呼び出し
             | "read" "[" expression "]" -> read_vector
             | "iread" "[" expression "]" -> iread_vector
             | "read" -> read_expr
@@ -120,6 +147,24 @@ while_stmt: "while" expression [":"] block "end"
 
 // rep文 for i in 0..n を rep i,n と簡潔に書く
 rep_stmt: "rep" [var_name ","] expression [":"] block "end"
+
+// 関数定義 def
+def_stmt: "def" var_name "(" [def_arg ("," def_arg)*] ")" [":"] block "end"
+
+// return
+return_stmt: "return" expression
+
+// 返り値を使う関数呼び出し
+// 式である。
+func_call: var_name "(" [expression ("," expression)*] ")"
+
+// 返り値を使わない関数呼び出し
+// 独立した命令であるため、C++では末尾にセミコロンが付く。
+func_call_cmd: func_call
+
+// 引数のルール
+?def_arg: typed_var
+        | var_name
 
 break_stmt: "break"
 continue_stmt: "continue"
