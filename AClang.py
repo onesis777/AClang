@@ -75,6 +75,16 @@ class AClangTransformer(Transformer):
 {block_code}
 }}"""
 
+    def foreach_stmt(self, items):
+        # items から None を取り除く
+        items = [x for x in items if x is not None]
+        for_var = items[0]
+        iterable = items[1]
+        block_code = items[2]
+        return f"""for (auto&& {for_var} : {iterable}) {{
+{block_code}
+}}"""
+    
     def while_stmt(self, items):
         while_cond = items[0]
         block_code = items[1]
@@ -155,7 +165,7 @@ class AClangTransformer(Transformer):
     def yn_upper(self, items):
             cond = items[0]
             return f'std::cout << ({cond} ? "YES" : "NO") << "\\n";'
-    
+
     def var_cmd(self, items):
         raw_vars = items[0]
         exprs = items[1]

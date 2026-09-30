@@ -149,6 +149,9 @@ if_stmt: "if" expression [":"] block ("elif" expression [":"] block)* ["else" ["
 // for文
 for_stmt: "for" var_name "in" expression ".." expression [".." expression] [":"] block "end"
 
+// 拡張for文
+foreach_stmt: "for" var_name "in" expression [":"] block "end"
+
 // while文
 while_stmt: "while" expression [":"] block "end"
 
