@@ -142,6 +142,20 @@ class AClangTransformer(Transformer):
             exprs = ' << " " << '.join(exprs)
         return f'std::cout << std::boolalpha << {exprs} << "\\n";'
     
+    def print_cmd(self, items):
+        exprs = items[0]
+        if isinstance(exprs, list):
+            exprs = ' << " " << '.join(exprs)
+        return f"std::cout << std::boolalpha << {exprs};"
+    
+    def yn_lower(self, items):
+        cond = items[0]
+        return f'std::cout << ({cond} ? "Yes" : "No") << "\\n";'
+    
+    def yn_upper(self, items):
+            cond = items[0]
+            return f'std::cout << ({cond} ? "YES" : "NO") << "\\n";'
+    
     def var_cmd(self, items):
         raw_vars = items[0]
         exprs = items[1]

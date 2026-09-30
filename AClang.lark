@@ -3,6 +3,8 @@
 
 // 命令の種類
 ?cmd : out_cmd
+     | print_cmd
+     | yn_cmd
      | var_cmd
      | add_assign_cmd
      | sub_assign_cmd
@@ -27,6 +29,11 @@
 // 命令のルール
 // "out"のあとに文が続く
 out_cmd : "out" expr_list
+
+print_cmd : "print" expr_list
+
+yn_cmd : "yn" expression -> yn_lower
+       | "YN" expression -> yn_upper
 
 // "変数名=" のあとに文が続く
 var_cmd : var_list "=" expr_list
