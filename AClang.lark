@@ -173,7 +173,13 @@ continue_stmt: "continue"
 %import common.ESCAPED_STRING -> STRING
 %import common.CNAME
 %import common.WS
-%ignore WS // 空白文字を無視
+%import common.CPP_COMMENT
+%import common.C_COMMENT
+
+// 空白文字・コメントを無視
+%ignore WS
+%ignore CPP_COMMENT
+%ignore C_COMMENT
 
 // ドットの後に必ず1文字以上の数字を要求する NUMBER を定義
 NUMBER: /[+-]?[0-9]+(\.[0-9]+)?/
