@@ -18,6 +18,7 @@
      | append_cmd
      | if_stmt
      | for_stmt
+     | foreach_stmt
      | while_stmt
      | rep_stmt
      | def_stmt
@@ -127,6 +128,8 @@ expr_list : expression ("," expression)*
             | "read" -> read_expr
             | "iread" -> iread_expr
             | "modpow" "(" expression "," expression "," expression ")" -> modpow
+            | "min" "(" expression ("," expression)* ")" -> min
+            | "max" "(" expression ("," expression)* ")" -> max
             | "(" expression ")"
             | vector_init
             | vector

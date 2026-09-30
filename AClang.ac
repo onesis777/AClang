@@ -1,11 +1,2 @@
-a, b = iread
-
-def is_even(n: int)
-    return n % 2 == 0
-end
-
-if is_even(a * b)
-    out "Even"
-else
-    out "Odd"
-end
+a = [1, 5, 6, 3, 0, 8, -1, -6, 10000000]
+out min(a), max(a)

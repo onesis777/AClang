@@ -40,17 +40,26 @@ long long modpow(long long x, long long n, long long MOD) {
     return ret;
 }
 
-int main(void) {
-long long a;
-long long b;
-std::cin >> a >> b;
-auto is_even = [&]( long long n ) {
-return ((static_cast<long long>(n) % static_cast<long long>(2)) == 0);
-};
-if (is_even((a * b))) {
-    std::cout << std::boolalpha << "Even" << "\n";
-} else {
-    std::cout << std::boolalpha << "Odd" << "\n";
+long long min(const std::vector<long long>& a) {
+    if (a.empty()) return 0;
+    long long ret = a[0];
+    for (auto x : a){
+        ret = std::min(ret, x);
+    }
+    return ret;
 }
+
+long long max(const std::vector<long long>& a) {
+    if (a.empty()) return 0;
+    long long ret = a[0];
+    for (auto x : a){
+        ret = std::max(ret, x);
+    }
+    return ret;
+}
+
+int main(void) {
+auto a = std::vector<long long>{1, 5, 6, 3, 0, 8, -1, -6, 10000000};
+std::cout << std::boolalpha << min(a) << " " << max(a) << "\n";
 return 0;
 }

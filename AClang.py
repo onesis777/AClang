@@ -298,14 +298,15 @@ class AClangTransformer(Transformer):
         return f"{target}.push_back({value});"
     
     def vector(self, items):
-        elements = [x for x in items if x is not None] # None を取り除いた vector の中身
+        elements = [str(x) for x in items if x is not None]
         # 空配列[]
         if elements == []:
             return "std::vector<long long>()"
-        # 二次元空配列[[]]
-        elif len(items) == 1 and items[0] == "std::vector<long long>()":
-            return "std::vector<std::vector<long long>>()"
-        return f"std::vector{{{', '.join(elements)}}}"
+        # 要素が vector なら二次元以上として auto に型推論させる。
+        if any("std::vector" in x for x in elements):
+            return f"std::vector{{{', '.join(elements)}}}"
+        # 数値配列は long long に固定する。
+        return f"std::vector<long long>{{{', '.join(elements)}}}"
     
     def vector_access(self, items):
         var_name = items[0]
@@ -339,6 +340,18 @@ class AClangTransformer(Transformer):
     def iread_expr(self, items):
         return "[]{ long long n; std::cin >> n; return n; }()"
     
+    def min(self, items):
+        args = [str(x) for x in items if x is not None]
+        if len(args) == 1:
+            return f"min({args[0]})"
+        return f"min({{{', '.join(args)}}})"
+    
+    def max(self, items):
+            args = [str(x) for x in items if x is not None]
+            if len(args) == 1:
+                return f"max({args[0]})"
+            return f"max({{{', '.join(args)}}})"
+
     def add(self, items):
         number1 = items[0]
         number2 = items[1]
@@ -492,6 +505,24 @@ long long modpow(long long x, long long n, long long MOD) {
         if (n & 1) ret = ret * x % MOD;
         x = x * x % MOD;
         n >>= 1;
+    }
+    return ret;
+}
+
+long long min(const std::vector<long long>& a) {
+    if (a.empty()) return 0;
+    long long ret = a[0];
+    for (auto x : a){
+        ret = std::min(ret, x);
+    }
+    return ret;
+}
+
+long long max(const std::vector<long long>& a) {
+    if (a.empty()) return 0;
+    long long ret = a[0];
+    for (auto x : a){
+        ret = std::max(ret, x);
     }
     return ret;
 }
