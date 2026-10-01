@@ -40,26 +40,61 @@ long long modpow(long long x, long long n, long long MOD) {
     return ret;
 }
 
-long long min(const std::vector<long long>& a) {
+template <typename T>
+T min(const std::vector<T>& a) {
     if (a.empty()) return 0;
-    long long ret = a[0];
-    for (auto x : a){
+
+    T ret = a[0];
+    for (auto x : a) {
         ret = std::min(ret, x);
     }
     return ret;
 }
 
-long long max(const std::vector<long long>& a) {
+template <typename T>
+T max(const std::vector<T>& a) {
     if (a.empty()) return 0;
-    long long ret = a[0];
-    for (auto x : a){
+
+    T ret = a[0];
+    for (auto x : a) {
         ret = std::max(ret, x);
     }
     return ret;
 }
 
+template <typename T>
+T sum(const std::vector<T>& a) {
+    T total = 0;
+    for (T x : a) {
+        total += x;
+    }
+    return total;
+}
+
+template <typename T>
+bool chmax(T &a, const T& b) {
+    if (a < b) {
+        a = b;
+        return true;
+    }
+    return false;
+}
+
+template <typename T>
+bool chmin(T &a, const T& b) {
+    if (a > b) {
+        a = b;
+        return true;
+    }
+    return false;
+}
+
 int main(void) {
-auto a = std::vector<long long>{1, 5, 6, 3, 0, 8, -1, -6, 10000000};
-std::cout << std::boolalpha << min(a) << " " << max(a) << "\n";
+auto a = []{ long long n; std::cin >> n; return n; }();
+long long b;
+long long c;
+std::cin >> b >> c;
+auto s = []{ std::string s; std::cin >> s; return s; }();
+std::cout << std::boolalpha << ((a + b) + c) << " " << s << "\n";
 return 0;
 }

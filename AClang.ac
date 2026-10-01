@@ -1,2 +1,6 @@
-a = [1, 5, 6, 3, 0, 8, -1, -6, 10000000]
-out min(a), max(a)
+// PracticeA - Welcome to AtCoder
+// https://atcoder.jp/contests/abs/tasks/practice_1
+a = iread
+b, c = iread
+s = read
+out a + b + c, s

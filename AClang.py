@@ -548,7 +548,7 @@ T max(const std::vector<T>& a) {
 }
 
 template <typename T>
-T sum(const vector<T>& a) {
+T sum(const std::vector<T>& a) {
     T total = 0;
     for (T x : a) {
         total += x;
