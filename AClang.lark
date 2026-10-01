@@ -130,6 +130,9 @@ expr_list : expression ("," expression)*
             | "modpow" "(" expression "," expression "," expression ")" -> modpow
             | "min" "(" expression ("," expression)* ")" -> min
             | "max" "(" expression ("," expression)* ")" -> max
+            | "sum" "(" expression ("," expression)* ")" -> sum
+            | "chmin" "(" expression "," expression ")" -> chmin
+            | "chmax" "(" expression "," expression ")" -> chmax
             | "(" expression ")"
             | vector_init
             | vector

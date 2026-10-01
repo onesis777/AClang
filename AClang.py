@@ -347,10 +347,26 @@ class AClangTransformer(Transformer):
         return f"min({{{', '.join(args)}}})"
     
     def max(self, items):
-            args = [str(x) for x in items if x is not None]
-            if len(args) == 1:
-                return f"max({args[0]})"
-            return f"max({{{', '.join(args)}}})"
+        args = [str(x) for x in items if x is not None]
+        if len(args) == 1:
+            return f"max({args[0]})"
+        return f"max({{{', '.join(args)}}})"
+        
+    def sum(self, items):
+        args = [str(x) for x in items if x is not None]
+        if len(args) == 1:
+            return f"sum({args[0]})"
+        return f"sum({{{', '.join(args)}}})"
+    
+    def chmin(self, items):
+        num1 = items[0]
+        num2 = items[1]
+        return f"chmin({num1}, {num2})"
+    
+    def chmax(self, items):
+        num1 = items[0]
+        num2 = items[1]
+        return f"chmax({num1}, {num2})"
 
     def add(self, items):
         number1 = items[0]
@@ -509,22 +525,53 @@ long long modpow(long long x, long long n, long long MOD) {
     return ret;
 }
 
-long long min(const std::vector<long long>& a) {
+template <typename T>
+T min(const std::vector<T>& a) {
     if (a.empty()) return 0;
-    long long ret = a[0];
-    for (auto x : a){
+
+    T ret = a[0];
+    for (auto x : a) {
         ret = std::min(ret, x);
     }
     return ret;
 }
 
-long long max(const std::vector<long long>& a) {
+template <typename T>
+T max(const std::vector<T>& a) {
     if (a.empty()) return 0;
-    long long ret = a[0];
-    for (auto x : a){
+
+    T ret = a[0];
+    for (auto x : a) {
         ret = std::max(ret, x);
     }
     return ret;
+}
+
+template <typename T>
+T sum(const vector<T>& a) {
+    T total = 0;
+    for (T x : a) {
+        total += x;
+    }
+    return total;
+}
+
+template <typename T>
+bool chmax(T &a, const T& b) {
+    if (a < b) {
+        a = b;
+        return true;
+    }
+    return false;
+}
+
+template <typename T>
+bool chmin(T &a, const T& b) {
+    if (a > b) {
+        a = b;
+        return true;
+    }
+    return false;
 }
 
 int main(void) {
