@@ -367,6 +367,12 @@ class AClangTransformer(Transformer):
         num1 = items[0]
         num2 = items[1]
         return f"chmax({num1}, {num2})"
+    
+    def ternary(self, items):
+        cond = items[0]
+        expr1 = items[1]
+        expr2 = items[2]
+        return f"({cond} ? {expr1} : {expr2})"
 
     def add(self, items):
         number1 = items[0]

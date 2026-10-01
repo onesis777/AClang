@@ -69,7 +69,11 @@ typed_var: var_name ":" var_name
 expr_list : expression ("," expression)*
 
 // 文のトップ
-?expression : logical_or
+?expression : ternary
+
+// 三項演算子
+?ternary : logical_or
+         | logical_or "?" expression ":" expression -> ternary
 
 // 論理和
 ?logical_or : logical_or "||" logical_and -> log_or
