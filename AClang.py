@@ -284,6 +284,14 @@ class AClangTransformer(Transformer):
         value = items[1]
         return f"{target} = pow({target}, {value});"
 
+    def inc_cmd(self, items):
+        target = items[0]
+        return f"{target}++;"
+
+    def dec_cmd(self, items):
+        target = items[0]
+        return f"{target}--;"
+
     def sort_asc(self, items):
         target = items[0]
         return f"std::sort({target}.begin(), {target}.end());"
@@ -367,7 +375,12 @@ class AClangTransformer(Transformer):
         num1 = items[0]
         num2 = items[1]
         return f"chmax({num1}, {num2})"
-    
+
+    def count(self, items):
+        iterable = items[0]
+        value = items[1]
+        return f"std::count({iterable}.begin(), {iterable}.end(), {value})"
+
     def ternary(self, items):
         cond = items[0]
         expr1 = items[1]
@@ -468,6 +481,9 @@ class AClangTransformer(Transformer):
         return items[0]
     
     def number(self, items):
+        return items[0]
+
+    def char(self, items):
         return items[0]
     
     def cname(self, items):

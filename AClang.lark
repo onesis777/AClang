@@ -14,6 +14,8 @@
      | mod_assign_cmd
      | intpow_assign_cmd
      | doublepow_assign_cmd
+     | inc_cmd
+     | dec_cmd
      | sort_cmd
      | append_cmd
      | if_stmt
@@ -47,6 +49,8 @@ rounddiv_assign_cmd : primary "/_=" expression
 mod_assign_cmd : primary "%=" expression
 intpow_assign_cmd : primary "^^=" expression
 doublepow_assign_cmd : primary "**=" expression
+inc_cmd : primary "++"
+dec_cmd : primary "--"
 
 // "sort" または "rsort" のあとに変数名が続く
 sort_cmd : "sort" primary  -> sort_asc
@@ -124,6 +128,7 @@ expr_list : expression ("," expression)*
 // 最小単位（リテラル、関数呼び出しなど）
 ?atom       : STRING -> string
             | NUMBER -> number
+            | CHAR -> char
             | "true" -> true_lit
             | "false" -> false_lit
             | func_call // 返り値を使う関数呼び出し
@@ -137,6 +142,7 @@ expr_list : expression ("," expression)*
             | "sum" "(" expression ("," expression)* ")" -> sum
             | "chmin" "(" expression "," expression ")" -> chmin
             | "chmax" "(" expression "," expression ")" -> chmax
+            | primary "." "count" "(" expression ")" -> count
             | "(" expression ")"
             | vector_init
             | vector
@@ -167,9 +173,6 @@ while_stmt: "while" expression [":"] block "end"
 
 // rep文 for i in 0..n を rep i,n と簡潔に書く
 rep_stmt: "rep" [var_name ","] expression [":"] block "end"
-
-// def
-def_stmt: "def" var_name "(" () ")"
 
 // 関数定義 def
 def_stmt: "def" var_name "(" [def_arg ("," def_arg)*] ")" [":"] block "end"
@@ -206,3 +209,6 @@ continue_stmt: "continue"
 
 // ドットの後に必ず1文字以上の数字を要求する NUMBER を定義
 NUMBER: /[+-]?[0-9]+(\.[0-9]+)?/
+
+// シングルクォート囲みの1文字をパースする正規表現
+CHAR: /'([^'\\]|\\.)'/

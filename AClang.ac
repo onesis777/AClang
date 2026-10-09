@@ -1,4 +1,3 @@
-// ABC086A - Product
-// https://atcoder.jp/contests/abs/tasks/abc086_a
-a, b = iread
-out a * b % 2 == 0 ? "Even" : "Odd"
+// ABC081A - Placing Marbles 
+// https://atcoder.jp/contests/abs/tasks/abc081_a
+out read.count('1')

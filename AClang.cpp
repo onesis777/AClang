@@ -90,9 +90,6 @@ bool chmin(T &a, const T& b) {
 }
 
 int main(void) {
-long long a;
-long long b;
-std::cin >> a >> b;
-std::cout << std::boolalpha << (((static_cast<long long>((a * b)) % static_cast<long long>(2)) == 0) ? "Even" : "Odd") << "\n";
+std::cout << std::boolalpha << std::count([]{ std::string s; std::cin >> s; return s; }().begin(), []{ std::string s; std::cin >> s; return s; }().end(), '1') << "\n";
 return 0;
 }
