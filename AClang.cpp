@@ -40,12 +40,59 @@ long long modpow(long long x, long long n, long long MOD) {
     return ret;
 }
 
-int main(void) {
-auto N = []{ int n; std::cin >> n; return n; }();
-auto i = 0;
-while ((i < N)) {
-std::cout << std::boolalpha << "ya!" << "\n";
-i = (i + 1);
+template <typename T>
+T min(const std::vector<T>& a) {
+    if (a.empty()) return 0;
+
+    T ret = a[0];
+    for (auto x : a) {
+        ret = std::min(ret, x);
+    }
+    return ret;
 }
+
+template <typename T>
+T max(const std::vector<T>& a) {
+    if (a.empty()) return 0;
+
+    T ret = a[0];
+    for (auto x : a) {
+        ret = std::max(ret, x);
+    }
+    return ret;
+}
+
+template <typename T>
+T sum(const std::vector<T>& a) {
+    T total = 0;
+    for (T x : a) {
+        total += x;
+    }
+    return total;
+}
+
+template <typename T>
+bool chmax(T &a, const T& b) {
+    if (a < b) {
+        a = b;
+        return true;
+    }
+    return false;
+}
+
+template <typename T>
+bool chmin(T &a, const T& b) {
+    if (a > b) {
+        a = b;
+        return true;
+    }
+    return false;
+}
+
+int main(void) {
+long long a;
+long long b;
+std::cin >> a >> b;
+std::cout << std::boolalpha << (((static_cast<long long>((a * b)) % static_cast<long long>(2)) == 0) ? "Even" : "Odd") << "\n";
 return 0;
 }

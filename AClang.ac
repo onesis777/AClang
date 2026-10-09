@@ -1,6 +1,4 @@
-N = iread
-i = 0
-while i < N
-    out "ya!"
-    i = i + 1
-end
+// ABC086A - Product
+// https://atcoder.jp/contests/abs/tasks/abc086_a
+a, b = iread
+out a * b % 2 == 0 ? "Even" : "Odd"
