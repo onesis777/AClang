@@ -121,6 +121,9 @@ while_stmt: "while" expression [":"] block "end"
 // rep文 for i in 0..n を rep i,n と簡潔に書く
 rep_stmt: "rep" [var_name ","] expression [":"] block "end"
 
+// def
+def_stmt: "def" var_name "(" () ")"
+
 break_stmt: "break"
 continue_stmt: "continue"
 
