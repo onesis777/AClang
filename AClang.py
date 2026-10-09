@@ -490,10 +490,10 @@ class AClangTransformer(Transformer):
         return items[0]
     
     def true_lit(self, items):
-        return items[0]
+        return "true"
     
     def false_lit(self, items):
-        return items[0]
+        return "false"
 
 # パーサーを作成
 parser = Lark(grammar, parser="lalr", transformer=AClangTransformer())
