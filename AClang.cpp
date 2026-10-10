@@ -90,27 +90,24 @@ bool chmin(T &a, const T& b) {
 }
 
 int main(void) {
-auto n = []{ long long n; std::cin >> n; return n; }();
-auto a = [&]{
-    std::vector<long long> _v(n);
-    for (long long& _x : _v) std::cin >> _x;
-    return _v;
-}();
-auto f = true;
+long long a;
+long long b;
+long long c;
+long long x;
+std::cin >> a >> b >> c >> x;
 auto ans = 0;
-while (true) {
-for (auto&& x : a) {
-if (((static_cast<long long>(x) % static_cast<long long>(2)) == 0)) {
-    x = static_cast<long long>(x) / static_cast<long long>(2);
-} else {
-    f = false;
-}
-}
-if (!(f)) {
-    break;
+for (long long i = 0; i < (a + 1); i++) {
+for (long long j = 0; j < (b + 1); j++) {
+for (long long k = 0; k < (c + 1); k++) {
+if (((((500 * i) + (100 * j)) + (50 * k)) == x)) {
+    ans++;
 } 
-ans++;
 }
+
+}
+
+}
+
 std::cout << std::boolalpha << ans << "\n";
 return 0;
 }
