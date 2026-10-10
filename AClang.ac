@@ -1,14 +1,14 @@
-// ABC087B - Coins 
-// https://atcoder.jp/contests/abs/tasks/abc087_b
-a, b, c, x = iread
-ans = 0
-rep i, a + 1
-    rep j, b + 1
-        rep k, c + 1
-            if 500 * i + 100 * j + 50 * k == x
-                ans++
-            end
-        end
+// ABC088B - Card Game for Two
+// https://atcoder.jp/contests/abs/tasks/abc088_b
+n = iread
+a = iread[n]
+rsort a
+alice, bob = 0, 0
+rep i, n
+    if i % 2 == 0
+        alice += a[i]
+    else
+        bob += a[i]
     end
 end
-out ans
+out alice - bob
