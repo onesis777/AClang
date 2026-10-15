@@ -1,6 +1,9 @@
 # AClang
 競技プログラミングに適した言語を目指して開発しています
 
+## スライド
+https://speakerdeck.com/onesis777/puroguramingu-gengo-tsuku-te-mita
+
 ## 文法
 AClangの文法は以下のようなものです。実装済みのものも、今後実装予定のものも、まとめて掲載します。
 ```
