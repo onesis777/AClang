@@ -531,7 +531,8 @@ except Exception as e:
 
 # 各トップレベル命令の開始行を #line でC++側に引き継ぐ。
 cpp_parts = []
-for command in syntax_tree.children:
+commands = syntax_tree.children if getattr(syntax_tree, "data", None) == "start" else [syntax_tree]
+for command in commands:
     command_line = getattr(getattr(command, "meta", None), "line", 1)
     command_code = transformer.transform(command)
     cpp_parts.append(f'#line {command_line} "{SOURCE_FILE}"\n{command_code}')
