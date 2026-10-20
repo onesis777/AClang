@@ -150,7 +150,7 @@ class AClangTransformer(Transformer):
         exprs = items[0]
         if isinstance(exprs, list):
             exprs = ' << " " << '.join(exprs)
-        return f'std::cout << std::boolalpha << {exprs} << "\n";'
+        return f'std::cout << std::boolalpha << {exprs} << "\\n";'
     
     def print_cmd(self, items):
         exprs = items[0]
@@ -160,11 +160,11 @@ class AClangTransformer(Transformer):
     
     def yn_lower(self, items):
         cond = items[0]
-        return f'std::cout << ({cond} ? "Yes" : "No") << "\n";'
+        return f'std::cout << ({cond} ? "Yes" : "No") << "\\n";'
     
     def yn_upper(self, items):
             cond = items[0]
-            return f'std::cout << ({cond} ? "YES" : "NO") << "\n";'
+            return f'std::cout << ({cond} ? "YES" : "NO") << "\\n";'
 
     def var_cmd(self, items):
         raw_vars = items[0]
@@ -515,7 +515,7 @@ except Exception as e:
     if isinstance(e, UnexpectedInput):
         line = getattr(e, "line", None)
         column = getattr(e, "column", None)
-        print(f"{SOURCE_FILE}:{line or '?'}:{column or '?}: 構文エラー", file=sys.stderr)
+        print(f"{SOURCE_FILE}:{line or '?'}:{column or '?'}: 構文エラー", file=sys.stderr)
         source_lines = aclang_code.splitlines()
         if line and 1 <= line <= len(source_lines):
             print(source_lines[line - 1], file=sys.stderr)

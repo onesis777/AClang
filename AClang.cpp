@@ -90,14 +90,15 @@ bool chmin(T &a, const T& b) {
 }
 
 int main(void) {
+#line 3 "AClang.ac"
 auto n = []{ long long n; std::cin >> n; return n; }();
-auto a = [&]{
-    std::vector<long long> _v(n);
-    for (long long& _x : _v) std::cin >> _x;
-    return _v;
-}();
+#line 4 "AClang.ac"
+auto a = ireeeeead[n];
+#line 5 "AClang.ac"
 std::sort(a.rbegin(), a.rend());
+#line 6 "AClang.ac"
 auto [alice, bob] = std::make_tuple(0, 0);
+#line 7 "AClang.ac"
 for (long long i = 0; i < n; i++) {
 if (((static_cast<long long>(i) % static_cast<long long>(2)) == 0)) {
     alice += a[i];
@@ -106,6 +107,7 @@ if (((static_cast<long long>(i) % static_cast<long long>(2)) == 0)) {
 }
 }
 
+#line 14 "AClang.ac"
 std::cout << std::boolalpha << (alice - bob) << "\n";
 return 0;
 }

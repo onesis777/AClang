@@ -1,7 +1,8 @@
 #!/bin/bash
 
 echo "AClangをトランスパイルしています."
-python3 AClang.py
+# python3 AClang.py
+./.venv/bin/python AClang.py
 
 # Pythonの実行が失敗した場合はここで終了
 if [ $? -ne 0 ]; then
