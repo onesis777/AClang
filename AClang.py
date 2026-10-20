@@ -150,7 +150,7 @@ class AClangTransformer(Transformer):
         exprs = items[0]
         if isinstance(exprs, list):
             exprs = ' << " " << '.join(exprs)
-        return f'std::cout << std::boolalpha << {exprs} << "\\n";'
+        return f'std::cout << std::boolalpha << {exprs} << "\n";'
     
     def print_cmd(self, items):
         exprs = items[0]
@@ -160,11 +160,11 @@ class AClangTransformer(Transformer):
     
     def yn_lower(self, items):
         cond = items[0]
-        return f'std::cout << ({cond} ? "Yes" : "No") << "\\n";'
+        return f'std::cout << ({cond} ? "Yes" : "No") << "\n";'
     
     def yn_upper(self, items):
             cond = items[0]
-            return f'std::cout << ({cond} ? "YES" : "NO") << "\\n";'
+            return f'std::cout << ({cond} ? "YES" : "NO") << "\n";'
 
     def var_cmd(self, items):
         raw_vars = items[0]
@@ -534,8 +534,8 @@ cpp_parts = []
 for command in syntax_tree.children:
     command_line = getattr(getattr(command, "meta", None), "line", 1)
     command_code = transformer.transform(command)
-    cpp_parts.append(f'#line {command_line} "{SOURCE_FILE}"\\n{command_code}')
-cpp_code = "\\n".join(cpp_parts)
+    cpp_parts.append(f'#line {command_line} "{SOURCE_FILE}"\n{command_code}')
+cpp_code = "\n".join(cpp_parts)
 
 cpp_template = """\
 #include <iostream>
