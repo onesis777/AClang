@@ -496,14 +496,47 @@ class AClangTransformer(Transformer):
         return "false"
 
 # パーサーを作成
-parser = Lark(grammar, parser="lalr", transformer=AClangTransformer())
+# 変換前の構文木から各命令の開始行を取得するため、Transformerは後から適用する。
+parser = Lark(grammar, parser="lalr", propagate_positions=True)
+transformer = AClangTransformer()
 
 # AClang.ac からAClangのコードを読み込む
-with open("AClang.ac", "r", encoding="utf-8") as f:
+SOURCE_FILE = "AClang.ac"
+with open(SOURCE_FILE, "r", encoding="utf-8") as f:
     aclang_code = f.read()
 
-# パーサーでC++に変換
-cpp_code = parser.parse(aclang_code)
+# 構文エラーを、AClang.ac の行・列と該当行つきで表示する
+try:
+    syntax_tree = parser.parse(aclang_code)
+except Exception as e:
+    import sys
+    from lark.exceptions import UnexpectedInput
+
+    if isinstance(e, UnexpectedInput):
+        line = getattr(e, "line", None)
+        column = getattr(e, "column", None)
+        print(f"{SOURCE_FILE}:{line or '?'}:{column or '?}: 構文エラー", file=sys.stderr)
+        source_lines = aclang_code.splitlines()
+        if line and 1 <= line <= len(source_lines):
+            print(source_lines[line - 1], file=sys.stderr)
+            if column:
+                print(" " * (column - 1) + "^", file=sys.stderr)
+        expected = getattr(e, "expected", None)
+        if expected:
+            print("ここで期待されていたもの: " + ", ".join(sorted(expected)), file=sys.stderr)
+        print(str(e).splitlines()[0], file=sys.stderr)
+    else:
+        print(f"{SOURCE_FILE}: 解析中にエラーが発生しました: {e}", file=sys.stderr)
+    raise SystemExit(1)
+
+# 各トップレベル命令の開始行を #line でC++側に引き継ぐ。
+cpp_parts = []
+for command in syntax_tree.children:
+    command_line = getattr(getattr(command, "meta", None), "line", 1)
+    command_code = transformer.transform(command)
+    cpp_parts.append(f'#line {command_line} "{SOURCE_FILE}"\\n{command_code}')
+cpp_code = "\\n".join(cpp_parts)
+
 cpp_template = """\
 #include <iostream>
 #include <vector>
