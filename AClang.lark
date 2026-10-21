@@ -129,6 +129,9 @@ expr_list : expression ("," expression)*
 ?atom       : STRING -> string
             | NUMBER -> number
             | CHAR -> char
+            | "inf" -> inf
+            | "mod998" -> mod998
+            | "mod107" -> mod107
             | "true" -> true_lit
             | "false" -> false_lit
             | func_call // 返り値を使う関数呼び出し

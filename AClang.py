@@ -494,6 +494,15 @@ class AClangTransformer(Transformer):
     
     def false_lit(self, items):
         return "false"
+    
+    def inf(self, items):
+        return "INF"
+    
+    def mod998(self, items):
+        return "MOD998"
+    
+    def mod107(self, items):
+        return "MOD107"
 
 # パーサーを作成
 # 変換前の構文木から各命令の開始行を取得するため、Transformerは後から適用する。
@@ -558,6 +567,10 @@ cpp_template = """\
 
 // 入出力の高速化
 struct Init { Init() { std::ios::sync_with_stdio(0); std::cin.tie(0); } }init;
+
+long long INF = 2e18;
+long long MOD998 = 998244353;
+long long MOD107 = 1000000007;
 
 // x ^^ n のための繰り返し2乗法
 long long intpow(long long x, long long n) {
