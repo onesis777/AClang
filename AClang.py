@@ -319,7 +319,7 @@ class AClangTransformer(Transformer):
     def vector_access(self, items):
         var_name = items[0]
         index_expr = items[1]
-        return f"{var_name}[{index_expr}]"
+        return f"vector_access({var_name}, {index_expr})"
     
     def vector_init(self, items):
         value = items[0]
@@ -327,6 +327,13 @@ class AClangTransformer(Transformer):
         if "std::vector" in value:
             return f"std::vector({size}, {value})"
         return f"std::vector<long long>({size}, {value})"
+    
+    def slice(self, items):
+        container = items[0]
+        start = items[1] if items[1] is not None else "std::nullopt"
+        end = items[2] if items[2] is not None else "std::nullopt"
+        step = items[3] if items[3] is not None else 1
+        return f"slice({container}, {start}, {end}, {step})"
     
     def read_vector(self, items):
         return f"""[&]{{
@@ -380,6 +387,10 @@ class AClangTransformer(Transformer):
         iterable = items[0]
         value = items[1]
         return f"std::count({iterable}.begin(), {iterable}.end(), {value})"
+    
+    def len(self, items):
+        arg = items[0]
+        return f"static_cast<long long>({arg}.size())"
 
     def ternary(self, items):
         cond = items[0]
@@ -559,6 +570,9 @@ cpp_template = """\
 #include <queue>
 #include <stack>
 #include <tuple>
+#include <cassert>
+#include <stdexcept>
+#include <optional>
 
 // オンラインジャッジでなければ配列外参照にエラーを出す
 #ifndef ONLINE_JUDGE
@@ -641,6 +655,60 @@ bool chmin(T &a, const T& b) {
         return true;
     }
     return false;
+}
+
+template <typename T>
+decltype(auto) vector_access(const T& a, long long index) {
+    long long n = static_cast<long long>(a.size());
+    if (index < 0) index += n;
+    assert(index >= 0 && "index out of range");
+    return a[index];
+}
+
+template <typename T>
+T slice(
+    const T& a,
+    std::optional<long long> start_arg,
+    std::optional<long long> end_arg,
+    long long step
+) {
+    if (step == 0) {
+        throw std::invalid_argument("slice step cannot be zero");
+    }
+
+    T ret;
+    long long n = static_cast<long long>(a.size());
+    long long start, end;
+
+    if (step > 0) {
+        start = start_arg.value_or(0);
+        end = end_arg.value_or(n);
+
+        if (start_arg && start < 0) start += n;
+        if (end_arg && end < 0) end += n;
+
+        start = std::max(0LL, std::min(start, n));
+        end = std::max(0LL, std::min(end, n));
+
+        for (long long i = start; i < end; i += step) {
+            ret.push_back(a[i]);
+        }
+    } else {
+        start = start_arg.value_or(n - 1);
+        end = end_arg.value_or(-1);
+
+        if (start_arg && start < 0) start += n;
+        if (end_arg && end < 0) end += n;
+
+        start = std::max(-1LL, std::min(start, n - 1));
+        end = std::max(-1LL, std::min(end, n - 1));
+
+        for (long long i = start; i > end; i += step) {
+            ret.push_back(a[i]);
+        }
+    }
+
+    return ret;
 }
 
 int main(void) {

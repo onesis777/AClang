@@ -9,6 +9,9 @@
 #include <queue>
 #include <stack>
 #include <tuple>
+#include <cassert>
+#include <stdexcept>
+#include <optional>
 
 // オンラインジャッジでなければ配列外参照にエラーを出す
 #ifndef ONLINE_JUDGE
@@ -17,6 +20,10 @@
 
 // 入出力の高速化
 struct Init { Init() { std::ios::sync_with_stdio(0); std::cin.tie(0); } }init;
+
+long long INF = 2e18;
+long long MOD998 = 998244353;
+long long MOD107 = 1000000007;
 
 // x ^^ n のための繰り返し2乗法
 long long intpow(long long x, long long n) {
@@ -89,25 +96,80 @@ bool chmin(T &a, const T& b) {
     return false;
 }
 
-int main(void) {
-#line 3 "AClang.ac"
-auto n = []{ long long n; std::cin >> n; return n; }();
-#line 4 "AClang.ac"
-auto a = ireeeeead[n];
-#line 5 "AClang.ac"
-std::sort(a.rbegin(), a.rend());
-#line 6 "AClang.ac"
-auto [alice, bob] = std::make_tuple(0, 0);
-#line 7 "AClang.ac"
-for (long long i = 0; i < n; i++) {
-if (((static_cast<long long>(i) % static_cast<long long>(2)) == 0)) {
-    alice += a[i];
-} else {
-    bob += a[i];
-}
+template <typename T>
+decltype(auto) vector_access(const T& a, long long index) {
+    long long n = static_cast<long long>(a.size());
+    if (index < 0) index += n;
+    assert(index >= 0 && "index out of range");
+    return a[index];
 }
 
-#line 14 "AClang.ac"
-std::cout << std::boolalpha << (alice - bob) << "\n";
+template <typename T>
+T slice(
+    const T& a,
+    std::optional<long long> start_arg,
+    std::optional<long long> end_arg,
+    long long step
+) {
+    if (step == 0) {
+        throw std::invalid_argument("slice step cannot be zero");
+    }
+
+    T ret;
+    long long n = static_cast<long long>(a.size());
+    long long start, end;
+
+    if (step > 0) {
+        start = start_arg.value_or(0);
+        end = end_arg.value_or(n);
+
+        if (start_arg && start < 0) start += n;
+        if (end_arg && end < 0) end += n;
+
+        start = std::max(0LL, std::min(start, n));
+        end = std::max(0LL, std::min(end, n));
+
+        for (long long i = start; i < end; i += step) {
+            ret.push_back(a[i]);
+        }
+    } else {
+        start = start_arg.value_or(n - 1);
+        end = end_arg.value_or(-1);
+
+        if (start_arg && start < 0) start += n;
+        if (end_arg && end < 0) end += n;
+
+        start = std::max(-1LL, std::min(start, n - 1));
+        end = std::max(-1LL, std::min(end, n - 1));
+
+        for (long long i = start; i > end; i += step) {
+            ret.push_back(a[i]);
+        }
+    }
+
+    return ret;
+}
+
+int main(void) {
+#line 1 "AClang.ac"
+auto vec = std::vector<long long>{1, 2, 7, 0, 5};
+#line 2 "AClang.ac"
+auto v1 = slice(vec, 1, 3, 1);
+#line 3 "AClang.ac"
+for (auto&& x : v1) {
+std::cout << std::boolalpha << x << " " << "";
+}
+#line 6 "AClang.ac"
+std::cout << std::boolalpha << "" << "\n";
+#line 7 "AClang.ac"
+std::cout << std::boolalpha << vector_access(vec, -1) << "\n";
+#line 8 "AClang.ac"
+auto v2 = slice(vec, std::nullopt, std::nullopt, -1);
+#line 9 "AClang.ac"
+for (auto&& x : v2) {
+std::cout << std::boolalpha << x << " " << "";
+}
+#line 12 "AClang.ac"
+std::cout << std::boolalpha << "" << "\n";
 return 0;
 }

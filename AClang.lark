@@ -123,6 +123,7 @@ expr_list : expression ("," expression)*
 
 // 変数参照（配列アクセスを含む）
 ?var_ref    : var_name
+            | var_ref "[" [expression] ":" [expression] [":" [expression]] "]" -> slice
             | var_ref "[" expression "]" -> vector_access
 
 // 最小単位（リテラル、関数呼び出しなど）
@@ -145,6 +146,7 @@ expr_list : expression ("," expression)*
             | "sum" "(" expression ("," expression)* ")" -> sum
             | "chmin" "(" expression "," expression ")" -> chmin
             | "chmax" "(" expression "," expression ")" -> chmax
+            | "len" "(" expression ")" -> len
             | primary "." "count" "(" expression ")" -> count
             | "(" expression ")"
             | vector_init
