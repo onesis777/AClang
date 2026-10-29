@@ -19,17 +19,19 @@ a = true // bool
 
 // リスト
 l = [1, 5, 3] // list
-l = int[] // 空のlist (intを格納)
-l = int[5](0) // [0, 0, 0, 0, 0]
-l = int[H][W](0) // H行W列の２次元配列を0で初期化
+l = []
+l = [0] * 5 // [0, 0, 0, 0, 0]
+l = [[0] * H] * W // H行W列の２次元配列を0で初期化
 l[3] // lの3番目の要素 (0-indexed)
 
 // 演算子
 + 加算
 - 減算
 * 乗算
-/ 除算 (int同士では計算結果もint, どちらかにdoubleが含まれれば計算結果はdouble)
-** べき乗
+/ 除算(小数)
+/_ 除算(切り捨て)
+** 累乗(小数)
+^^ べき乗(整数) // 繰り返し2乗法を用いて実装しています
 % 係数
 
 < より小さい
@@ -55,7 +57,7 @@ out 1 + 2 // 3
 out "Hello" // Hello
 out n, m // n m
 print a // aを出力 末尾に改行が入らない
-ynout 条件式 // true のとき Yes, false のとき No をout
+yn bool // true のとき Yes, false のとき No をout
  
 // if文
 if 式
@@ -129,7 +131,7 @@ end
 // 例
 A = 3
 B = 5
-def a_plus_b(int a, int b)
+def a_plus_b(a: int, b: int)
 	a++
 	b -= 2
 	return a + b
@@ -141,10 +143,8 @@ max() // 与えられた2つ以上の数値の中の最大値 数値をリスト
 sum() // リストに含まれる値の合計
 len(s) // str s の長さ
 s[1:4] // sの1番目から4番目をスライス
-l.sort(begin, end, rev)
-l.sort() // lを全部昇順ソート 
-l.sort(rev) // lを全部降順ソート
-l.sort(2, 5) // lの2番目から5番目まで昇順ソート (0-indexed)
+sort l // lを全部昇順ソート 
+rsort l // lを全部降順ソート
 INF // 1 << 60 (2の60乗)
 mod998 // 998244353
 mod107 // 1000000007
