@@ -94,6 +94,7 @@ expr_list : expression ("," expression)*
             | comparison ">=" add_expr -> gte
             | comparison "<"  add_expr -> lt
             | comparison ">"  add_expr -> gt
+            | comparison "in" add_expr -> vec_in
             | add_expr
 
 // 四則演算
@@ -131,8 +132,8 @@ expr_list : expression ("," expression)*
             | NUMBER -> number
             | CHAR -> char
             | "inf" -> inf
-            | "mod998" -> mod998
-            | "mod107" -> mod107
+            | "MOD998" -> mod998
+            | "MOD107" -> mod107
             | "true" -> true_lit
             | "false" -> false_lit
             | func_call // 返り値を使う関数呼び出し

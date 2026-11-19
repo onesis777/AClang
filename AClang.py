@@ -514,6 +514,9 @@ class AClangTransformer(Transformer):
     
     def mod107(self, items):
         return "MOD107"
+    
+    def vec_in(self, items):
+        return f"_in({items[1]}, {items[0]})"
 
 # パーサーを作成
 # 変換前の構文木から各命令の開始行を取得するため、Transformerは後から適用する。
@@ -709,6 +712,14 @@ T slice(
     }
 
     return ret;
+}
+
+template <typename T, typename U>
+bool _in(std::vector<T> vec, const U &target) {
+    for (const auto &x: vec) {
+        if (x == target) return true;
+    }
+    return false;
 }
 
 int main(void) {

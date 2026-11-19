@@ -150,26 +150,20 @@ T slice(
     return ret;
 }
 
+template <typename T, typename U>
+bool _in(std::vector<T> vec, const U &target) {
+    for (const auto &x: vec) {
+        if (x == target) return true;
+    }
+    return false;
+}
+
 int main(void) {
-#line 1 "AClang.ac"
-auto vec = std::vector<long long>{1, 2, 7, 0, 5};
 #line 2 "AClang.ac"
-auto v1 = slice(vec, 1, 3, 1);
+auto v = std::vector<long long>{1, 6, 56, 1729, 2100000};
 #line 3 "AClang.ac"
-for (auto&& x : v1) {
-std::cout << std::boolalpha << x << " " << "";
-}
-#line 6 "AClang.ac"
-std::cout << std::boolalpha << "" << "\n";
-#line 7 "AClang.ac"
-std::cout << std::boolalpha << vector_access(vec, -1) << "\n";
-#line 8 "AClang.ac"
-auto v2 = slice(vec, std::nullopt, std::nullopt, -1);
-#line 9 "AClang.ac"
-for (auto&& x : v2) {
-std::cout << std::boolalpha << x << " " << "";
-}
-#line 12 "AClang.ac"
-std::cout << std::boolalpha << "" << "\n";
+std::cout << std::boolalpha << _in(v, 1) << "\n";
+#line 4 "AClang.ac"
+std::cout << std::boolalpha << _in(v, 114514) << "\n";
 return 0;
 }
