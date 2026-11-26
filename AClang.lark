@@ -147,6 +147,7 @@ expr_list : expression ("," expression)*
             | "sum" "(" expression ("," expression)* ")" -> sum
             | "chmin" "(" expression "," expression ")" -> chmin
             | "chmax" "(" expression "," expression ")" -> chmax
+            | "set" "(" [expression ("," expression)*] ")" -> set_init
             | "len" "(" expression ")" -> len
             | primary "." "count" "(" expression ")" -> count
             | "(" expression ")"

@@ -307,14 +307,9 @@ class AClangTransformer(Transformer):
     
     def vector(self, items):
         elements = [str(x) for x in items if x is not None]
-        # 空配列[]
         if elements == []:
             return "std::vector<long long>()"
-        # 要素が vector なら二次元以上として auto に型推論させる。
-        if any("std::vector" in x for x in elements):
-            return f"std::vector{{{', '.join(elements)}}}"
-        # 数値配列は long long に固定する。
-        return f"std::vector<long long>{{{', '.join(elements)}}}"
+        return f"std::vector{{{', '.join(elements)}}}"
     
     def vector_access(self, items):
         var_name = items[0]
@@ -489,10 +484,13 @@ class AClangTransformer(Transformer):
         return f"!({expr})"
     
     def string(self, items):
-        return items[0]
+        return f"{items[0]}s"
     
     def number(self, items):
-        return items[0]
+        val = str(items[0])
+        if "." in val or "e" in val or "E" in val:
+            return val
+        return f"{val}LL"
 
     def char(self, items):
         return items[0]
@@ -517,6 +515,9 @@ class AClangTransformer(Transformer):
     
     def vec_in(self, items):
         return f"_in({items[1]}, {items[0]})"
+
+    def set_init(self, items):
+
 
 # パーサーを作成
 # 変換前の構文木から各命令の開始行を取得するため、Transformerは後から適用する。
@@ -584,6 +585,8 @@ cpp_template = """\
 
 // 入出力の高速化
 struct Init { Init() { std::ios::sync_with_stdio(0); std::cin.tie(0); } }init;
+
+using namespace std::string_literals;
 
 long long INF = 2e18;
 long long MOD998 = 998244353;
@@ -720,6 +723,19 @@ bool _in(std::vector<T> vec, const U &target) {
         if (x == target) return true;
     }
     return false;
+}
+
+bool _in(const std::string& s, const std::string& target) {
+    return s.find(target) != std::string::npos;
+}
+
+bool _in(const std::string& s, char target) {
+    return s.find(target) != std::string::npos;
+}
+
+template <typename T, typename U>
+bool _in(const std::set<T>& s, const U &target) {
+    return s.contains(target);
 }
 
 int main(void) {
